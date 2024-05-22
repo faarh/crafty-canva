@@ -18,6 +18,7 @@ import { addTocart } from "../../redux/actions/cart";
 import { toast } from "react-toastify";
 import Ratings from "./Ratings";
 import axios from "axios";
+import CustomOrder from "./CustomOrder";
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -27,6 +28,7 @@ const ProductDetails = ({ data }) => {
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
+  const [customOrderDialogOpen, setCustomOrderDialogOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -85,10 +87,9 @@ const ProductDetails = ({ data }) => {
       0
     );
 
-  const avg =  totalRatings / totalReviewsLength || 0;
+  const avg = totalRatings / totalReviewsLength || 0;
 
   const averageRating = avg.toFixed(2);
-
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
@@ -223,18 +224,36 @@ const ProductDetails = ({ data }) => {
                       ({averageRating}/5) Ratings
                     </h5>
                   </div>
-                  <div
-                    className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
-                    onClick={handleMessageSubmit}
-                  >
-                    <span className="text-white flex items-center">
-                      Send Message <AiOutlineMessage className="ml-1" />
-                    </span>
+                  <div className="flex flex-col md:flex-row gap-1 md:gap-2 h-full items-center">
+                    <div
+                      className={`${styles.button} bg-[#6443d1] !rounded !h-11`}
+                      onClick={handleMessageSubmit}
+                    >
+                      <span className="text-white flex items-center">
+                        Send Message <AiOutlineMessage className="ml-1" />
+                      </span>
+                    </div>
+                    <div
+                      className={`${styles.button} bg-[#6443d1]  !rounded !h-11`}
+                      onClick={() => {
+                        setCustomOrderDialogOpen(true);
+                      }}
+                    >
+                      <span className="text-white flex items-center">
+                        Custom Order
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          {customOrderDialogOpen ? (
+            <CustomOrder
+              onClose={() => setCustomOrderDialogOpen(false)}
+              data={data}
+            />
+          ) : null}
           <ProductDetailsInfo
             data={data}
             products={products}

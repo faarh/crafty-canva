@@ -6,6 +6,44 @@ const { isAuthenticated, isSeller, isAdmin } = require("../middleware/auth");
 const Order = require("../model/order");
 const Shop = require("../model/shop");
 const Product = require("../model/product");
+const sendMail = require("../utils/sendMail");
+
+// custom orderMail
+router.post(
+  "/custom-order",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const body = req.body;
+      const text = `
+      There is Custom Order Request For You 
+      Customer Name : ${body.name}
+      Customer Email : ${body.email}
+      Customer Contact : ${body.contact}
+      Artwork For : ${body.artworkFor}
+      Framed : ${body.framed === "framed" ? "Yes" : "No"}
+      Required Time : ${body.timeRequired}
+      Size : ${body.size}
+      Investment : ${body.investment}
+      ${
+        body.additionalInfo?.length
+          ? `Additional Information : ${body.additionalInfo}`
+          : ""
+      }
+      `;
+      await sendMail({
+        email: body.toEmail,
+        subject: `Custom Order Request from ${body.name}`,
+        message: text,
+      });
+      res.status(200).json({
+        success: true,
+        message: "Order Placed Successfully! Yay",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 // create new order
 router.post(
@@ -111,7 +149,7 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         order.paymentInfo.status = "Succeeded";
-        const serviceCharge = order.totalPrice * .10;
+        const serviceCharge = order.totalPrice * 0.1;
         await updateSellerInfo(order.totalPrice - serviceCharge);
       }
 
@@ -133,7 +171,7 @@ router.put(
 
       async function updateSellerInfo(amount) {
         const seller = await Shop.findById(req.seller.id);
-        
+
         seller.availableBalance = amount;
 
         await seller.save();
