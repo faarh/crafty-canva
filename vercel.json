@@ -1,7 +1,32 @@
 {
-    
-        "rewrites": [
-            {"source": "/(.*)", "destination": "/"}
-        ]
-    
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
+    },
+    {
+      "src": "backend/package.json",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "socket/package.json",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/backend/$1"
+    },
+    {
+      "src": "/socket/(.*)",
+      "dest": "/socket/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ]
 }
