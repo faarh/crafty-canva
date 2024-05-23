@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "version": 2,
   "builds": [
     {
@@ -30,10 +29,8 @@
       "dest": "/frontend/$1"
     }
   ]
-=======
    "rewrites":  [
        {"source": "/(.*)", "destination": "/"}
     ]
 
->>>>>>> 861d53967fd86dec793eebd1ad26198593b2d65d
 }
